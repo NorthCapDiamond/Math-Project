@@ -1,0 +1,78 @@
+Dot dot1 = new Dot(0,0,1);
+
+        Dot dot2 = new Dot(0,5,2);
+        Dot dot3 = new Dot(-2,2,1);
+        Dot dot4 = new Dot(2,2,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
+
+        dot1 = new Dot(0,0,1);
+        dot2 = new Dot(0,5,2);
+        dot3 = new Dot(1,0,1);
+        dot4 = new Dot(1,5,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
+
+        dot1 = new Dot(0,0,1);
+        dot2 = new Dot(0,5,2);
+        dot3 = new Dot(0,0,1);
+        dot4 = new Dot(0,5,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
+
+        dot1 = new Dot(-2,-2,1);
+        dot2 = new Dot(2,2,2);
+        dot3 = new Dot(3,0,1);
+        dot4 = new Dot(3,5,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
+
+        dot1 = new Dot(-2,-2,1);
+        dot2 = new Dot(2,2,2);
+        dot3 = new Dot(2,0,1);
+        dot4 = new Dot(2,5,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
+
+        dot1 = new Dot(-2,2,1);
+        dot2 = new Dot(2,-2,2);
+        dot3 = new Dot(-3,5,1);
+        dot4 = new Dot(3,5,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
+
+        dot1 = new Dot(-2,2,1);
+        dot2 = new Dot(2,-2,2);
+        dot3 = new Dot(-3,2,1);
+        dot4 = new Dot(3,2,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
+
+        dot1 = new Dot(-2,2,1);
+        dot2 = new Dot(2,-2,2);
+        dot3 = new Dot(-3,-2,1);
+        dot4 = new Dot(3,-2,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
+
+        dot1 = new Dot(-2,2,1);
+        dot2 = new Dot(2,-2,2);
+        dot3 = new Dot(-3,-3,1);
+        dot4 = new Dot(3,-3,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
+
+        dot1 = new Dot(-2,2,1);
+        dot2 = new Dot(2,-2,2);
+        dot3 = new Dot(-2,-2,1);
+        dot4 = new Dot(2,2,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
+
+        dot1 = new Dot(-2,0,1);
+        dot2 = new Dot(0,2,2);
+        dot3 = new Dot(0,3,1);
+        dot4 = new Dot(3,-2,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
+
+        dot1 = new Dot(-2,-2,1);
+        dot2 = new Dot(0,0,2);
+        dot3 = new Dot(1,1,1);
+        dot4 = new Dot(2,2,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
+
+        dot1 = new Dot(0,0,1);
+        dot2 = new Dot(3,3,2);
+        dot3 = new Dot(1,1,1);
+        dot4 = new Dot(5,5,2);
+        System.out.println(isSelfIntersection(equations(dot1,dot2), equations(dot3, dot4)));
