@@ -160,7 +160,7 @@ public class AddOneByOne implements ICommand{
         }
 
         Dot newDot = new Dot(collectionManager.length()+1);
-        environment.getPrintStream().println("Now you need to type double values for the dot like this: 'x,y' without. 4<=x<=90 <-51=y<=89 '");
+        environment.getPrintStream().println("Now you need to type double values for the dot like this: 'x,y' without '. 4<=x<=90 <-51=y<=89 '");
         for (int i = 0; i < 3; i++) {
             try {
                 for (int j = 0; j < amountOfDots; j++) {
