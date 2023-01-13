@@ -174,14 +174,48 @@ public class Integrate implements ICommand{
         double[] ray = equations(dot, edge);
 
         for (int i = 1; i < collectionManager.length() ; i++) {
-            if (isSelfIntersection(ray, equations(collectionManager.findById(i),collectionManager.findById(i+1)))){
+            if (isSelfIntersection(ray, equations(collectionManager.findById(i),collectionManager.findById(i+1))) || isSelfIntersection(ray,equations(collectionManager.findById(1),collectionManager.findById(collectionManager.length())))){
+                if(equations(collectionManager.findById(i),collectionManager.findById(i+1)).length==5 && equations(collectionManager.findById(i),collectionManager.findById(i+1))[4]==0){
+                    return rayOnTheEdge(dot.getX(), dot.getY(), collectionManager);
+                }
                 counterOfIntersections++;
             }
         }
-        if(isSelfIntersection(ray,equations(collectionManager.findById(1),collectionManager.findById(collectionManager.length())))){
-            counterOfIntersections++;
-        }
         return counterOfIntersections % 2 == 1;
+    }
+
+    public boolean rayOnTheEdge(double x, double y, CollectionManager collectionManager){
+        double[] ray = equations(new Dot(x,y,-1), new Dot(89,y,-1));
+        for (int i = 1; i < collectionManager.length(); i++) {
+            double [] newEquation = equations(collectionManager.findById(i),collectionManager.findById(i+1));
+            double maxY1 = Double.max(ray[1], ray[3]);
+            double maxY2 = Double.max(newEquation[1], newEquation[3]);
+            if(newEquation.length==5 && newEquation[4]==0 && maxY1 == maxY2){
+                double maxX1 = Double.max(ray[0], ray[2]);
+                double maxX2 = Double.max(newEquation[0], newEquation[2]);
+
+                double minX1 = Double.min(ray[0], ray[2]);
+                double minX2 = Double.min(newEquation[0], newEquation[2]);
+                double minY1 = Double.min(ray[1], ray[3]);
+                double minY2 = Double.min(newEquation[1], newEquation[3]);
+                return (minX2<=minX1);
+            }
+        }
+        double [] newEquation = equations(collectionManager.findById(1),collectionManager.findById(collectionManager.length()));
+        if(newEquation.length==5 && newEquation[4]==0){
+            double maxX1 = Double.max(ray[0], ray[2]);
+            double maxX2 = Double.max(newEquation[0], newEquation[2]);
+            double maxY1 = Double.max(ray[1], ray[3]);
+            double maxY2 = Double.max(newEquation[1], newEquation[3]);
+
+            double minX1 = Double.min(ray[0], ray[2]);
+            double minX2 = Double.min(newEquation[0], newEquation[2]);
+            double minY1 = Double.min(ray[1], ray[3]);
+            double minY2 = Double.min(newEquation[1], newEquation[3]);
+            return (minX2<=minX1 && maxY1 == maxY2);
+
+        }
+        return false;
     }
 
     public int characteristicFunction(double x, double y, CollectionManager collectionManager){
