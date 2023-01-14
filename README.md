@@ -1,2 +1,2 @@
 # MathProject
-My Math project. V1.0.0
+My Math project. V1.2.0
