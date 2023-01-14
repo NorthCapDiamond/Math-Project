@@ -16,7 +16,7 @@ public class Main {
         PrintStream writer = new PrintStream(System.out);
         Environment environment = new Environment(manager,reader, writer, history);
 
-        Invoker invoker = new Invoker(environment, new ICommand[]{new Info(), new Integrate(), new Rick(), new Help(), new AddOneByOne(), new Clean(), new Show(), new Exit(), new RemoveById()});
+        Invoker invoker = new Invoker(environment, new ICommand[]{new MonteCarloErrorGraph(), new IntegrateMonteCarlo(), new Info(), new Integrate(), new Rick(), new Help(), new AddOneByOne(), new Clean(), new Show(), new Exit(), new RemoveById()});
 
 
         System.out.println("Hello, welcome to Drobina's program");
@@ -36,5 +36,7 @@ public class Main {
         }
     }
 }
+
+
 
 

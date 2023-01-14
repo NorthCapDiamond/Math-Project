@@ -4,9 +4,7 @@ import Data.Dot;
 import Managers.CollectionManager;
 import util.Environment;
 
-import java.util.LinkedList;
-
-public class Integrate implements ICommand{
+public class IntegrateMonteCarlo implements ICommand{
 
 
     public boolean isSelfIntersection(double[] equation1, double[] equation2){
@@ -141,26 +139,6 @@ public class Integrate implements ICommand{
 
     }
 
-    public double square(double deltaX, double deltaY){
-        return deltaX*deltaY;
-    }
-    public double sinhXY(double x, double y){
-        //sinh x = (e^x - e^(-x))/2
-        //my function is: sinh t, where t=(2x+y)/100 => (e^t-e^(-t))/2
-        return ((Math.pow(Math.E,(2*x+y)/100)-Math.pow(Math.E,-1*(2*x+y)/100))/2);
-    }
-    public double firstPartialDxAndDy(double x,double y, double xo, double yo){
-        return  ((Math.pow(Math.E, -xo/50 -yo/100))/(100) + (Math.pow(Math.E,xo/50 + yo/100))/(100))*(x-xo) +
-                ((Math.pow(Math.E,-xo/50 - yo/100))/(200) + (Math.pow(Math.E,xo/50 + yo/100))/(200))*(y-yo);
-    }
-    public double secondPartialDx2AndDxDyAndDy2(double x, double y, double xo, double yo){
-        return (1/2) * (
-                (-(Math.pow(Math.E,-xo/50 -yo/100))/5000 + (Math.pow(Math.E,xo/50 +yo/100))/5000)*(Math.pow(x-xo,2))+
-              2*(-(Math.pow(Math.E,-xo/50 -yo/100))/10000 +(Math.pow(Math.E, xo/50 + yo/100))/10000)*(x-xo)*(y-yo)+
-                (-(Math.pow(Math.E,-xo/50 -yo/100))/20000 +(Math.pow(Math.E, xo/50 + yo/100))/20000)*(Math.pow(y-yo,2))
-        );
-    }
-
 
     //Ray tracing method
     //Accounting for the number of intersections
@@ -226,62 +204,97 @@ public class Integrate implements ICommand{
     }
 
 
-
-    @Override
-    public void execute(Environment environment, String message) {
-        if (environment.getCollectionManager().length()<3){
-            environment.getPrintStream().println("You need to fill the collection first!");
-            return;
-        }
-        double xo = -1000;
-        double yo = -1000;
+    public double integrateByG(CollectionManager collectionManager){
         double answer = 0;
         double deltaX = 1;
         double deltaY = 1;
-        double s = square(deltaX,deltaY);
+        double s = (deltaX * deltaY);
         for (double x = 4; x <= 90 ; x+=deltaX) {
             for (double y = -51; y <= 89 ; y+=deltaY) {
-                if(xo==-1000 && yo==-1000){
-                    if (dotInPolygon(x,y,environment.getCollectionManager())){
-                        xo = x;
-                        yo = y;
-                    }
-                }
-                answer+=sinhXY(x,y)*characteristicFunction(x, y, environment.getCollectionManager())*s;
+                answer+=1*characteristicFunction(x, y, collectionManager)*s;
             }
         }
-        environment.getPrintStream().printf("The integral sums for some partition of the bar equals : %f\n",answer);
-        environment.getPrintStream().println("Now we need to understand the error");
+        return answer;
+    }
+    public double sinhXY(double x, double y){
+        //sinh x = (e^x - e^(-x))/2
+        //my function is: sinh t, where t=(2x+y)/100 => (e^t-e^(-t))/2
+        return ((Math.pow(Math.E,(2*x+y)/100)-Math.pow(Math.E,-1*(2*x+y)/100))/2);
+    }
 
-        double error = 0;
-        for (double x = 4; x <= 90; x+=deltaX) {
-            for (double y = -51; y <= 89; y+=deltaY) {
-                error+= (sinhXY(xo,yo) + firstPartialDxAndDy(x,y,xo,yo) + secondPartialDx2AndDxDyAndDy2(x,y,xo,yo))*characteristicFunction(x,y,environment.getCollectionManager());
+
+    @Override
+    public void execute(Environment environment, String message) {
+        if (environment.getCollectionManager().length()<3) {
+            environment.getPrintStream().println("You need to fill the collection first!");
+            return;
+        }
+
+        //At first, we need to find S
+        double S = integrateByG(environment.getCollectionManager());
+
+        // Also we need to create N dots in G
+        // I prefer it randomly (because the main concept of Monte Carlo principle is random...
+        // because of casino, you know?)))
+        // *quick remind, math random returns double value 0<=a<1
+        // Mine is going to look like this: [4;90)x[-51;89) (but task was [4;90]x[-51;89],
+        // but this is not important with this method of integration!)
+
+        int N = 1000;
+        double[][] memory = new double[N][2];
+        for (int i = 0; i < N; i++) {
+            double x = Math.random()*86 + 4; //it's [0,1) * 86 = [0;86] and +4 = [4,90)
+            // I know, that I'll lose x == 90, but in any other cases I'll get more double points, so let's
+            //give it a try)
+            double y = Math.random()*140 - 51; //it's [-51;89)
+            while (!(dotInPolygon(x,y, environment.getCollectionManager()))){
+                x = Math.random()*86 + 4;
+                y = Math.random()*140 - 51;
             }
-
+            memory[i][0]=x;
+            memory[i][1]=y;
         }
-        for (int i = 1; i < environment.getCollectionManager().length(); i++) {
-            error+=1/2*deltaX*deltaY*(environment.getCollectionManager().distanceBetweenDots(environment.getCollectionManager().findById(i),environment.getCollectionManager().findById(i+1)));
 
+
+        //Now we have N dots and need to evaluate the integral I_N
+        double evaluation = S/N;
+        for (int i = 0; i < N; i++) {
+            evaluation+=sinhXY(memory[i][0],memory[i][1]);
         }
-        error+=1/2*deltaX*deltaY*(environment.getCollectionManager().distanceBetweenDots(environment.getCollectionManager().findById(1),environment.getCollectionManager().findById(environment.getCollectionManager().length())));
+        // Due to law of large numbers we can claim, that lim_{N->inf} I_n = I
 
-        environment.getPrintStream().printf("|Error - Answer| = %f\n", Math.abs(error-answer));
+
+        //It is impossible to estimate the error directly here,
+        // but we can talk about estimating the standard deviation
+        // We need to know Dispersion for this, but we don't really know this.
+        // We can try to evaluate it
+
+        double evaluationOfDispersion = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                evaluationOfDispersion = evaluationOfDispersion +(sinhXY(memory[i][0],memory[i][1])-(sinhXY(memory[j][0],memory[j][1]))/100);
+            }
+        }
+        evaluationOfDispersion /= (N - 1);
+
+        // finally, we're going to find the evaluation of error
+
+        double evaluationOfError = S * Math.sqrt(evaluationOfDispersion)/Math.sqrt(N);
+
+
+        environment.getPrintStream().printf("The answer is : %f\n",evaluation );
+        environment.getPrintStream().printf("Evaluation of error is : %f\n",evaluationOfError);
+        environment.getPrintStream().println("Command successfully finished!)");
+        return;
     }
 
     @Override
     public String getName() {
-        return "integrate";
+        return "integrate_monte_carlo";
     }
 
     @Override
     public String getDescription() {
-        return "integrate : Calculates the integral sums for some partition of the bar";
+        return "integrate_monte_carlo : returns value and error of integrating with 'Monte Carlo' method";
     }
 }
-
-
-
-
-
-
